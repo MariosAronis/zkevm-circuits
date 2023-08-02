@@ -92,10 +92,8 @@ async fn main() {
 
         info!("Compiling {:?}", name);
         // .compile() call will either fail with Err variant or return Ok(CompilerOutput)
-    // which may contain Errors or Warnings
-        let compiled = match solc
-            .compile(&input)
-        {
+        // which may contain Errors or Warnings
+        let compiled = match solc.compile(&input) {
             Err(error) => {
                 panic!("COMPILATION ERROR {:?}\n{:?}", &path_sol, error);
             }
