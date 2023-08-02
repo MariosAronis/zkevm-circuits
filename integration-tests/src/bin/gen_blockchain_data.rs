@@ -225,6 +225,49 @@ async fn main() {
         (block_num.as_u64(), contract.address()),
     );
 
+    // CheckMload
+    let contract = deploy(
+        prov_wallet0.clone(),
+        contracts.get("CheckMload").expect("contract not found"),
+        (),
+    )
+    .await;
+    let block_num = prov.get_block_number().await.expect("cannot get block_num");
+    blocks.insert("Deploy CheckMload".to_string(), block_num.as_u64());
+    deployments.insert(
+        "CheckMload".to_string(),
+        (block_num.as_u64(), contract.address()),
+    );
+
+    // CheckSdiv
+    let contract = deploy(
+        prov_wallet0.clone(),
+        contracts.get("CheckSdiv").expect("contract not found"),
+        (),
+    )
+    .await;
+    let block_num = prov.get_block_number().await.expect("cannot get block_num");
+    blocks.insert("Deploy CheckSdiv".to_string(), block_num.as_u64());
+    deployments.insert(
+        "CheckSdiv".to_string(),
+        (block_num.as_u64(), contract.address()),
+    );
+
+    // CheckExtCodeSize100
+    let contract = deploy(
+        prov_wallet0.clone(),
+        contracts
+            .get("CheckExtCodeSize100")
+            .expect("contract not found"),
+        (),
+    )
+    .await;
+    let block_num = prov.get_block_number().await.expect("cannot get block_num");
+    blocks.insert("Deploy CheckExtCodeSize100".to_string(), block_num.as_u64());
+    deployments.insert(
+        "CheckExtCodeSize100".to_string(),
+        (block_num.as_u64(), contract.address()),
+    );
     // ETH transfers: Generate a block with multiple transfers
     //
 
