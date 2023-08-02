@@ -11,11 +11,11 @@ use ethers::{
     middleware::SignerMiddleware,
     providers::{Middleware, PendingTransaction},
     signers::Signer,
-    solc::{CompilerInput, EvmVersion, Solc},
+    solc::{CompilerInput, EvmVersion},
 };
 use integration_tests::{
-    get_client, get_provider, get_wallet, log_init, CompiledContract, GenDataOutput, CONTRACTS,
-    CONTRACTS_PATH, WARN,
+    get_client, get_provider, get_wallet, log_init, worst_case::Solcwc, CompiledContract,
+    GenDataOutput, CONTRACTS, CONTRACTS_PATH, WARN,
 };
 use log::{error, info};
 use std::{collections::HashMap, fs::File, path::Path, sync::Arc, thread::sleep, time::Duration};
@@ -75,7 +75,7 @@ async fn main() {
 
     // Compile contracts
     info!("Compiling contracts...");
-    let solc = Solc::default();
+    let solc = Solcwc::default();
     info!("Solc version {}", solc.version().expect("version works"));
     let mut contracts = HashMap::new();
     for (name, contract_path) in CONTRACTS {
