@@ -91,9 +91,9 @@ async fn main() {
             .evm_version(EvmVersion::London);
 
         info!("Compiling {:?}", name);
+        // .compile() call will either fail with Err variant or return Ok(CompilerOutput)
+    // which may contain Errors or Warnings
         let compiled = match solc
-            // .compile() call will either fail with Err variant or return Ok(CompilerOutput)
-            // which may contain Errors or Warnings
             .compile(&input)
         {
             Err(error) => {
