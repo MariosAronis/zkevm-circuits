@@ -5,10 +5,10 @@ use crate::wcerrors::SolcError;
 use semver::Version;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::{
+    io::BufRead,
     path::PathBuf,
     process::{Command, Output, Stdio},
     str::FromStr,
-    io::BufRead,
 };
 
 /// Placeholder
@@ -18,7 +18,6 @@ pub type Result<T> = std::result::Result<T, SolcError>;
 pub const WARN: &[u64] = &[2018];
 /// The name of the `solc` binary on the system
 pub const SOLC: &str = "solc";
-
 
 /// this is a placeholder for this struct documentation
 #[derive(Debug, Clone, Eq, PartialEq, PartialOrd, Ord, Serialize, Deserialize)]
@@ -115,9 +114,6 @@ impl Solcwc {
                 .map_err(|err| SolcError::io(err, &self.0.solc))?,
         )
     }
-
-
-
 }
 
 fn compile_output(output: Output) -> Result<Vec<u8>> {
@@ -140,9 +136,15 @@ fn version_from_output(output: Output) -> Result<Version> {
             .last()
             .ok_or_else(|| SolcError::solc("version not found in solc output"))?;
         // NOTE: semver doesn't like `+` in g++ in build metadata which is invalid semver
-        Ok(Version::from_str(&version.trim_start_matches("Version: ").replace(".g++", ".gcc"))?)
+        Ok(Version::from_str(
+            &version
+                .trim_start_matches("Version: ")
+                .replace(".g++", ".gcc"),
+        )?)
     } else {
-        Err(SolcError::solc(String::from_utf8_lossy(&output.stderr).to_string()))
+        Err(SolcError::solc(
+            String::from_utf8_lossy(&output.stderr).to_string(),
+        ))
     }
 }
 

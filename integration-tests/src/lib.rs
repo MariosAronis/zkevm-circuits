@@ -147,7 +147,7 @@ pub struct CompiledContract {
 
 /// Common code for integration tests of circuits.
 pub mod integration_test_circuits;
-/// code for worst case block generation
-pub mod worst_case;
 /// create local errors module
 pub mod wcerrors;
+/// code for worst case block generation
+pub mod worst_case;
