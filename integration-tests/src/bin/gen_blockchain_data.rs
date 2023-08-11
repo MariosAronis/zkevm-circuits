@@ -1,22 +1,24 @@
 use ethers::{
-    abi::{self, Tokenize},
-    contract::{builders::ContractCall, Contract, ContractFactory},
+    abi::{self, Tokenize, Detokenize},
+    contract::{builders::ContractCall, Contract, ContractFactory, ContractInstance},
     core::{
         types::{
             transaction::eip2718::TypedTransaction, Address, TransactionReceipt,
-            TransactionRequest, U256, U64,
+            TransactionRequest, U256, U64,GethDebugTracingOptions, GethTrace,
         },
         utils::WEI_IN_ETHER,
     },
     middleware::SignerMiddleware,
     providers::{Middleware, PendingTransaction},
     signers::Signer,
-    solc::{CompilerInput, CompilerOutput, EvmVersion, Solc},
+    solc::{CompilerInput, CompilerOutput, EvmVersion, Solc}, types::{GethDebugTracerType, GethDebugTracerConfig},
 };
+use ethers_contract_abigen::Abigen;
 use integration_tests::{
     get_client, get_provider, get_wallet, log_init, CompiledContract, GenDataOutput, CONTRACTS,
-    CONTRACTS_PATH, WARN,
+    CONTRACTS_PATH, WARN
 };
+use integration_tests::mload::*;
 use log::{error, info};
 use serde::de::Deserialize;
 use std::{collections::HashMap, fs::File, path::Path, sync::Arc, thread::sleep, time::Duration};
@@ -195,7 +197,7 @@ async fn main() {
 
     // Deploy smart contracts
     //
-
+    let mut contract_apis = HashMap::new();
     let mut deployments = HashMap::new();
     let prov_wallet0 = Arc::new(SignerMiddleware::new(get_provider(), wallet0));
 
@@ -211,6 +213,10 @@ async fn main() {
     deployments.insert(
         "Greeter".to_string(),
         (block_num.as_u64(), contract.address()),
+    );
+    contract_apis.insert(
+        "Greeter".to_string(),
+        contract
     );
 
     // OpenZeppelinERC20TestToken
@@ -231,6 +237,10 @@ async fn main() {
         "OpenZeppelinERC20TestToken".to_string(),
         (block_num.as_u64(), contract.address()),
     );
+    contract_apis.insert(
+        "OpenZeppelinERC20TestToken".to_string(),
+        contract
+    );
 
     // Deploy smart contracts for worst case block benches
     //
@@ -248,6 +258,11 @@ async fn main() {
         "CheckMload".to_string(),
         (block_num.as_u64(), contract.address()),
     );
+    contract_apis.insert(
+        "CheckMload".to_string(),
+        contract
+    );
+    
 
     // CheckSdiv
     let contract = deploy(
@@ -261,6 +276,10 @@ async fn main() {
     deployments.insert(
         "CheckSdiv".to_string(),
         (block_num.as_u64(), contract.address()),
+    );
+    contract_apis.insert(
+        "CheckSdiv".to_string(),
+        contract
     );
 
     // CheckExtCodeSize100
@@ -277,6 +296,10 @@ async fn main() {
     deployments.insert(
         "CheckExtCodeSize100".to_string(),
         (block_num.as_u64(), contract.address()),
+    );
+    contract_apis.insert(
+        "CheckExtCodeSize100".to_string(),
+        contract
     );
 
     // ETH transfers: Generate a block with multiple transfers
@@ -435,5 +458,55 @@ async fn main() {
         blocks,
         deployments,
     };
+
+    // let binding = c_instance
+    //     .method::<_, String>("checkBatchYul", [100])
+    //     .expect("REASON");
+
+    // let meths = &binding;
+    
+
+    // abigen!(
+    //         Mload,
+    //         "contracts/MLOAD/MLOAD.json",
+    //      );
+
+    let block_num = prov.get_block_number().await.expect("cannot get block_num");
+    info! ("BLOCKNUMBER: {:#?}", block_num);
+    // cli.miner_start().await.expect("cannot start miner");
+    let data = Len(15000);
+    let data2 = CheckBatchYulCall {l:data};
+    let cinstance = contract_apis
+        .get("CheckMload")
+        .expect("ERROR");
+
+    let binding = &cinstance
+        .method::<integration_tests::mload::CheckBatchYulCall, String>("checkBatchYul", data2)
+        .expect("ANOTHER ERROR");
+    let tx_builder = binding;
+    
+    let response = tx_builder
+        .send()
+        .await
+        .expect("REASON");
+        // .unwrap();
+  
+    // check tx state until confirmed"
+
+    info!("RESPONSE: {:#?}", response);
+    cli.miner_stop().await.expect("cannot stop miner");
+    let block_num = prov.get_block_number().await.expect("cannot get block_num");
+    info! ("BLOCKNUMBER: {:#?}", block_num);
+
+    let opt = GethDebugTracingOptions::default();
+    let smtg = prov.debug_trace_transaction(response.tx_hash(), opt).await.unwrap();
+
+    match smtg {
+        GethTrace::Known(a) => println!("aaa: {:#?}",a),
+        GethTrace::Unknown(_) => todo!(),
+    };
+
+    // println!("TRACE: {:#?}", smtg);
+
     gen_data.store();
 }
