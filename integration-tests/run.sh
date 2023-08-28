@@ -106,4 +106,6 @@ fi
 if [ -n "$STEP_CLEANUP" ]; then
     echo "+ Cleanup..."
     docker_compose_cmd down -v --remove-orphans
+    # rm ./contracts/*.json
+    # rm ./contracts/*.rs
 fi

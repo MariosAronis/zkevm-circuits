@@ -7,7 +7,7 @@ contract CheckSdiv {
         uint256 l;
     }
  
-    function checkBatchYul(Len calldata l) external returns (uint256 r) {
+    function checkBatchYul(Len calldata l) external returns (uint32 r) {
         assembly {
             let input := calldataload(4)
             let len := div(input, 100)

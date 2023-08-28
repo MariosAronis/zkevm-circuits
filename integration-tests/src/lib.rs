@@ -7,11 +7,11 @@ use bus_mapping::rpc::GethClient;
 use env_logger::Env;
 use eth_types::Address;
 use ethers::{
-    abi::{Token, Detokenize, Tokenize, Contract},
+    abi::{Contract, Detokenize, Token, Tokenize},
+    contract::ContractInstance,
     core::{k256::ecdsa::SigningKey, types::Bytes},
     providers::{Http, Provider},
     signers::{coins_bip39::English, MnemonicBuilder, Signer, Wallet},
-    contract::ContractInstance,
 };
 use lazy_static::lazy_static;
 use serde::{Deserialize, Serialize};
@@ -38,15 +38,15 @@ pub const CONTRACTS_PATH: &str = "contracts";
 pub const WARN: &[u64] = &[2018, 5667];
 /// List of contracts as (ContractName, ContractSolidityFile)
 pub const CONTRACTS: &[(&str, &str)] = &[
-    ("Greeter", "greeter/Greeter.sol"),
+    ("Greeter", "Greeter.sol"),
     (
         "OpenZeppelinERC20TestToken",
-        "ERC20/OpenZeppelinERC20TestToken.sol",
+        "OpenZeppelinERC20TestToken.sol",
     ),
     // Contracts to test worst-case usage of opcodes.
-    ("CheckMload", "MLOAD/MLOAD.sol"),
-    ("CheckExtCodeSize100", "EXTCODESIZE/EXTCODESIZE100.sol"),
-    ("CheckSdiv", "SDIV/SDIV.sol"),
+    ("CheckMload", "MLOAD.sol"),
+    ("CheckExtCodeSize", "EXTCODESIZE.sol"),
+    ("CheckSdiv", "SDIV.sol"),
 ];
 /// Path to gen_blockchain_data output file
 pub const GENDATA_OUTPUT_PATH: &str = "gendata_output.json";
@@ -155,8 +155,8 @@ pub struct CompiledContract {
 /// Input type for benchmarking SCs functions
 // #[derive(Debug)]
 // pub struct Len {
-    /// number of opcode repetitions (divide with 100)
-    // pub l: u32,
+/// number of opcode repetitions (divide with 100)
+// pub l: u32,
 // }
 
 // impl Tokenize for Len {
@@ -166,5 +166,9 @@ pub struct CompiledContract {
 // }
 /// Common code for integration tests of circuits.
 pub mod integration_test_circuits;
-/// Placeholder
-pub mod mload;
+#[allow(missing_docs)]
+pub mod benchmarks;
+// #[allow(missing_docs)]
+// pub mod sdiv;
+// #[allow(missing_docs)]
+// pub mod extcodesize;
