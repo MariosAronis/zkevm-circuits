@@ -7,3 +7,6 @@
 	update = none
 	path = integration-tests/contracts/vendor/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "integration-tests/contracts/vendor/--force"]
+	path = integration-tests/contracts/vendor/--force
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts
