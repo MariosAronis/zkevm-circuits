@@ -52,7 +52,7 @@ fn main() {
     println!("cargo:rerun-if-changed=build.rs");
 
     let solc: Solc = Solc::default();
-    let _solc_version = solc.version().expect("Version Works");
+    // let _solc_version = solc.version().expect("Version Works");
 
     for (name, contract_path) in CONTRACTS {
         let path_sol = Path::new(CONTRACTS_PATH).join(contract_path);
