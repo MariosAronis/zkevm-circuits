@@ -54,7 +54,7 @@ fn main() {
     let solc: Solc = Solc::default();
     eprintln!("Solidity compiler intantiated!");
     eprintln!("SOLC: {:#?}", solc);
-    // let _solc_version = solc.version().expect("Version Works");
+    let _solc_version = solc.version().expect("Version Works");
     eprintln!("SOLC VERSION: {:#?}",_solc_version);    
 
     for (name, contract_path) in CONTRACTS {
